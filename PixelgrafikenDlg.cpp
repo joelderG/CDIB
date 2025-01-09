@@ -257,6 +257,60 @@ void CPixelgrafikenDlg::SaveFile()
 	}
 }
 
+void CPixelgrafikenDlg::OnBlending()
+{
+	if (m_dib.DibWidth() == 0 || m_dib.DibHeight() == 0)
+	{
+		AfxMessageBox(L"Kein Ausgangsbild geladen!");
+		return;
+	}
+
+	// Zweites Bild laden
+	CFileDialog dlg(TRUE, NULL, NULL,
+		OFN_HIDEREADONLY | OFN_FILEMUSTEXIST,
+		L"Image Files (*.bmp;*.jpg;*.jpeg)|*.bmp;*.jpg;*.jpeg|All Files (*.*)|*.*||");
+
+	m_dibSave.Load(L"bild.bmp");
+	m_dibSave.flip('v');
+
+	if (dlg.DoModal() == IDOK)
+	{
+		CString ext = dlg.GetFileExt().MakeLower();
+		bool loadSuccess = false;
+
+		// Temporäres Bild laden
+		if (ext == L"bmp")
+			loadSuccess = m_dibTemp.Load(dlg.GetPathName());
+		else if (ext == L"jpg" || ext == L"jpeg")
+			loadSuccess = m_dibTemp.LoadJpeg(dlg.GetPathName());
+
+		if (!loadSuccess)
+		{
+			AfxMessageBox(L"Fehler beim Laden des zweiten Bildes!");
+			return;
+		}
+
+		// Prüfen ob die Bilder die gleiche Größe haben
+		if (m_dibSave.DibWidth() != m_dibTemp.DibWidth() ||
+			m_dibSave.DibHeight() != m_dibTemp.DibHeight())
+		{
+			AfxMessageBox(L"Die Bilder müssen die gleiche Größe haben!");
+			return;
+		}
+
+		// Blending-Dialog anzeigen und den Zeiger auf das Hauptdialogfenster übergeben
+		BlendingDlg dlgBlend(this);
+		dlgBlend.SetMainDialog(this);
+
+		if (dlgBlend.DoModal() == IDOK)
+		{
+			// Blending auf das Bild anwenden und das Bild neu zeichnen
+			m_dib.blending(m_dibSave, m_dibTemp, dlgBlend.GetBlendValue());
+			Invalidate();  // Bild neu zeichnen
+		}
+	}
+}
+
 void CPixelgrafikenDlg::OnMenuladen()
 {
 	LoadFile();
@@ -307,54 +361,7 @@ void CPixelgrafikenDlg::OnMenukontrast()
 
 void CPixelgrafikenDlg::OnMenublending()
 {
-	if (m_dib.DibWidth() == 0 || m_dib.DibHeight() == 0)
-	{
-		AfxMessageBox(L"Kein Ausgangsbild geladen!");
-		return;
-	}
-
-	// Zweites Bild laden
-	CFileDialog dlg(TRUE, NULL, NULL,
-		OFN_HIDEREADONLY | OFN_FILEMUSTEXIST,
-		L"Image Files (*.bmp;*.jpg;*.jpeg)|*.bmp;*.jpg;*.jpeg|All Files (*.*)|*.*||");
-
-	m_dibSave.Load(L"bild.bmp");
-	m_dibSave.flip('v');
-
-	if (dlg.DoModal() == IDOK)
-	{
-		CString ext = dlg.GetFileExt().MakeLower();
-		bool loadSuccess = false;
-
-		// Temporäres Bild laden
-		if (ext == L"bmp")
-			loadSuccess = m_dibTemp.Load(dlg.GetPathName());
-		else if (ext == L"jpg" || ext == L"jpeg")
-			loadSuccess = m_dibTemp.LoadJpeg(dlg.GetPathName());
-
-		if (!loadSuccess)
-		{
-			AfxMessageBox(L"Fehler beim Laden des zweiten Bildes!");
-			return;
-		}
-
-		// Prüfen ob die Bilder die gleiche Größe haben
-		if (m_dibSave.DibWidth() != m_dibTemp.DibWidth() ||
-			m_dibSave.DibHeight() != m_dibTemp.DibHeight())
-		{
-			AfxMessageBox(L"Die Bilder müssen die gleiche Größe haben!");
-			return;
-		}
-
-		// Blending-Dialog anzeigen und den Zeiger auf das Hauptdialogfenster übergeben
-		BlendingDlg dlgBlend(this, this);
-		if (dlgBlend.DoModal() == IDOK)
-		{
-			// Blending auf das Bild anwenden und das Bild neu zeichnen
-			m_dib.blending(m_dibSave, m_dibTemp, dlgBlend.GetBlendValue());
-			Invalidate();  // Bild neu zeichnen
-		}
-	}
+	OnBlending();
 }
 
 

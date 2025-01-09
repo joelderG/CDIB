@@ -12,7 +12,7 @@
 
 IMPLEMENT_DYNAMIC(BlendingDlg, CDialogEx)
 
-BlendingDlg::BlendingDlg(CWnd* pParent, CPixelgrafikenDlg* pMainDlg)
+BlendingDlg::BlendingDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_BLENDING, pParent)
 {
 
@@ -45,15 +45,14 @@ END_MESSAGE_MAP()
 void BlendingDlg::UpdateLabel()
 {
     CString str;
-    str.Format(L"Überblendung: %d%%", m_blendValue);  // Anzeige des aktuellen Werts
-    SetDlgItemText(IDC_Blending, str);  // Text in der Anzeige setzen
+    str.Format(L"Überblendung: %d%%", m_blendValue);
+    SetDlgItemText(IDC_Blending, str);
 }
 
 void BlendingDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
-    m_blendValue = m_blendSlider.GetPos();  // Den aktuellen Wert des Sliders abfragen
-    UpdateLabel();  // Die Textanzeige mit dem neuen Wert aktualisieren
-
+    m_blendValue = m_blendSlider.GetPos();
+    UpdateLabel();
     // Wenn das Hauptdialogfenster (CPixelgrafikenDlg) existiert, das Bild live aktualisieren
     if (m_pDlg)  // Sicherstellen, dass der Zeiger gültig ist
     {
@@ -62,5 +61,6 @@ void BlendingDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
         m_pDlg->RedrawWindow();  // Bild neu zeichnen
     }
 
-    CDialog::OnHScroll(nSBCode, nPos, pScrollBar);  // Standardbehandlung des Ereignisses
+
+    CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
 }

@@ -223,21 +223,16 @@ void CDIB::contrast(float alpha) {
 }
 
 void CDIB::blending(CDIB& b1, CDIB& b2, int p) {
-	if ((m_pBMFH == 0) || (b1.m_pBMFH == 0) || (b2.m_pBMFH == 0))
-		return;
-
-	if ((m_pBMI->bmiHeader.biBitCount != 24) || (b1.m_pBMI->bmiHeader.biBitCount != 24) || (b2.m_pBMI->bmiHeader.biBitCount != 24))
-		return;
-
-	if ((DibWidth() != b1.DibWidth()) || (DibWidth() != b2.DibWidth()) || (DibHeight() != b1.DibHeight()) || (DibHeight() != b2.DibHeight()))
-		return;
-
+	if ((m_pBMFH == 0) || (b1.m_pBMFH == 0) || (b2.m_pBMFH == 0)) return;
+	if ((m_pBMI->bmiHeader.biBitCount != 24) ||
+		(b1.m_pBMI->bmiHeader.biBitCount != 24) ||
+		(b2.m_pBMI->bmiHeader.biBitCount != 24)) return;
+	if ((DibWidth() != b1.DibWidth()) || (DibWidth() != b2.DibWidth()) ||
+		(DibHeight() != b1.DibHeight()) || (DibHeight() != b2.DibHeight())) return;
 	BYTE* t, * t1, * t2; int width = DibWidth() * 3;
 	for (int i = 0; i < DibHeight(); i++) {
 		t = (BYTE*)GetPixelAddress(0, i);
-		t1 = (BYTE*)b1.GetPixelAddress(0, i);
-		t2 = (BYTE*)b2.GetPixelAddress(0, i);
-
+		t1 = (BYTE*)b1.GetPixelAddress(0, i); t2 = (BYTE*)b2.GetPixelAddress(0, i);
 		for (int j = 0; j < width; j += 3) {
 			*(t + j) = *(t1 + j) + ((*(t2 + j) - *(t1 + j)) * (p / 100.f));
 			*(t + j + 1) = *(t1 + j + 1) + ((*(t2 + j + 1) - *(t1 + j + 1)) * (p / 100.f));

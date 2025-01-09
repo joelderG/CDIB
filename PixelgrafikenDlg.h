@@ -57,6 +57,8 @@ public:
 	void draw_histogramm();
 	void LoadFile();
 	void SaveFile();
+	void OnBlending();
+
 	CDIB m_dib;
 	CDIB m_dibTemp;  // Temporäres Bild für Blending
 	CDIB m_dibSave;
